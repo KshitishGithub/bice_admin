@@ -1,0 +1,83 @@
+/* Nav menus css is here  */
+
+.elevation-4 {
+    box-shadow: none !important;
+}
+
+.sidebar {
+    padding-right: 0px !important;
+}
+
+.sidebar ul li a ion-icon {
+    margin-right: 10px;
+    font-size: 20px;
+    margin-bottom: -5px;
+}
+
+.nav-sidebar>.nav-item.menu-open>.nav-link,
+.nav-sidebar>.nav-item>.nav-link:hover,
+.nav-sidebar>.nav-item>.nav-link.active,
+.nav-item .menu-is-opening .menu-open a .active {
+    border-bottom-left-radius: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+
+/* Youtube page css is here  */
+
+.yt-thumbnail {
+    width: 150px;
+}
+
+
+/* Validation Css */
+
+label.error {
+    color: #ff7675;
+    font-size: 13px;
+}
+
+
+/* Pre Loader */
+
+#overlayer {
+    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+}
+
+#loading {
+    min-width: 100%;
+    position: relative;
+    padding: 15px;
+    border-radius: 4px;
+    background: #dfe6e9;
+}
+
+#loading img {
+    height: 60px;
+    width: 60px;
+}
+
+#loading span {
+    color: #000;
+}
+
+.sidebar-light-success {
+    background: #ffffff;
+    border-radius: 15px;
+    color: #dfe6e9;
+}
+
+
+/* .success_image {
+    width: 100%;
+} */
