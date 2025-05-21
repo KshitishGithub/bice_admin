@@ -92,17 +92,17 @@ $year = $obj->escapeString($_POST['year']);
 
 $month = $_POST['selected_months']; // Expecting array from frontend
 
-if (!is_array($month)) { 
+if (!is_array($month)) {
     $month = explode(',', $month); // Convert to array if comma-separated string
 }
 
 $totalMonths = count($month); // Count months
 $totalAmount = $totalMonths * 500; // Calculate amount
 
-// Convert months array to JSON format
-$monthsJson = json_encode($month); 
+// Convert months array to JSON format for DB storage
+$monthsJson = json_encode($month);
 
-// Current date
+// Current date in Asia/Kolkata timezone
 $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
 $date = $date->format('Y-m-d H:i:s');
 
@@ -111,7 +111,7 @@ $date = $date->format('Y-m-d H:i:s');
 $obj->insert('fees_collection', [
     "student_id" => $student_id,
     "year" => $year,
-    "months" => $monthsJson, // Store JSON format
+    "months" => $monthsJson,
     "amount" => $totalAmount,
     "created_at" => $date,
     "payment_type" => 'Cash',
@@ -120,8 +120,34 @@ $obj->insert('fees_collection', [
 
 $result = $obj->getResult();
 if ($result[0] == "success") {
-    echo json_encode(array('status' => 'success', 'msg' => 'Student fees collected.'));
+    // Fetching student data
+    $Addobj->rawsql("SELECT fname,lname, mobile FROM registration WHERE s_id = $student_id");
+    $stu_data = $Addobj->getResult();
+    $stu_name = $stu_data[0]['fname']. ' ' .$stu_data[0]['lname'];
+    $stu_mobile = $stu_data[0]['mobile'];
+
+    // Map short keys to uppercase month names
+    $monthsMap = [
+        'jan' => 'JAN', 'feb' => 'FEB', 'mar' => 'MAR', 'apr' => 'APR',
+        'may' => 'MAY', 'jun' => 'JUN', 'jul' => 'JUL', 'aug' => 'AUG',
+        'sep' => 'SEP', 'oct' => 'OCT', 'nov' => 'NOV', 'dec' => 'DEC'
+    ];
+
+    $formattedMonths = [];
+    foreach ($month as $m) {
+        if (isset($monthsMap[$m])) {
+            $formattedMonths[] = $monthsMap[$m];
+        }
+    }
+    $monthString = implode(', ', $formattedMonths);
+
+    // Send SMS
+    $stu_details = [$stu_name, "$monthString - $year Rs:$totalAmount"];
+    $obj->sendsms('EdBiCE', "148161", $stu_details, [$stu_mobile]);
+
+    echo json_encode(['status' => 'success', 'msg' => 'Student fees collected.']);
 } else {
-    echo json_encode(array('status' => 'error', 'msg' => 'Student fees collection failed due to some reason.'));
+    echo json_encode(['status' => 'error', 'msg' => 'Student collection failed due to some reason.']);
 }
+?>
 
