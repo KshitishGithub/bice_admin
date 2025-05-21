@@ -21,6 +21,9 @@ echo '<div class="modal-header bg-primary">
                             <form id="UpdateRegisteredStudents">
                                 <div class="card-body">
                <div class="row">
+                    <div class="col-12 text-center">
+                         <h2>Student Id : ' . $result['stu_sl'] .'</h2>
+                    </div>
                     <div class="col-md-6">
                          <span class="fw-bolder fs-5"><u><b>Personal Details:</b></u></span>
                          <table class="table table-border fw-bolder">

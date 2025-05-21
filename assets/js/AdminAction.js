@@ -818,10 +818,17 @@ $(document).ready(function () {
   $(document).on("click", "#old_student_collect", function (e) {
     e.preventDefault();
     var id = $(this).data("stu_id");
+    var year = new Date().getFullYear();
+
+    if (!year || !id) {
+      alert("Student ID or Year is missing.");
+      return;
+    }
+    
     $.ajax({
       url: "php_files/OldStudentsCollect.php",
       type: "POST",
-      data: { id: id },
+      data: { id: id, year: year },
       beforeSend: function () {
         $("#overlayer").show();
       },
@@ -902,7 +909,7 @@ $(document).ready(function () {
                         "Payment Received Successful!",
                         "Your payment was successful.",
                         "success"
-                      )
+                      );
                       // .then(() => {
                       //   location.reload(); // Refresh UI
                       // });
@@ -971,9 +978,8 @@ $(document).ready(function () {
                           "Payment Received Successful!",
                           "Your payment was successful.",
                           "success"
-                        )
-                        .then(() => {
-                          $("#StudentsFees").modal('hide');
+                        ).then(() => {
+                          $("#StudentsFees").modal("hide");
                         });
                       }
                     } catch (e) {
@@ -999,7 +1005,8 @@ $(document).ready(function () {
   });
 
   // ! when changeing year
-  $(document).change("#year", function () {
+  $(document).on("change", "#year", function (e) {
+    e.preventDefault();
     let year = $("#year").val();
     var id = $("#student_id").val();
 
@@ -1015,44 +1022,207 @@ $(document).ready(function () {
         $("#LoadCollectStudents").html(data);
         $("#StudentsFees").modal("show");
       },
+      error: function (xhr, status, error) {
+        $("#overlayer").hide();
+        console.error("AJAX Error:", status, error);
+        alert("Failed to fetch data. Check console for error.");
+      },
     });
   });
 
   //! Old Students Fees Collect
   $("#Old_Fees_Forms").on("submit", function (e) {
     e.preventDefault();
-    var months = $("#months").find(":selected").val();
-    var Fees = $("#Fees").val();
-    if (months == "") {
-      toastr.error("Months is required.");
-    } else if (Fees == "") {
-      toastr.error("Fees is required.");
-    } else {
-      var data = new FormData(this);
-      $.ajax({
-        url: "php_files/old_students_fees.php",
-        type: "POST",
-        data: data,
-        contentType: false,
-        processData: false,
-        beforeSend: function () {
-          $("#overlayer").show();
-        },
-        success: function (data) {
-          // console.log(data);
-          $(".modal_close").click();
-          $("#overlayer").hide();
-          var result = jQuery.parseJSON(data);
-          if (result.status == "error") {
-            var msg = result.msg;
-            toastr.error(msg);
-          } else {
-            var msg = result.msg;
-            toastr.success(msg);
-          }
-        },
-      });
+
+    // Get selected months
+    var selectedMonths = [];
+    $(".month.selected").each(function () {
+      selectedMonths.push($(this).data("value"));
+    });
+
+    // Validation
+    if (selectedMonths.length === 0) {
+      toastr.error("Please select at least one month.");
+      return;
     }
+
+    // Create FormData object
+    var formData = new FormData(this);
+
+    // Append selected months to FormData
+    formData.append("selected_months", selectedMonths.join(","));
+
+    Swal.fire({
+      title: "Select Payment Method",
+      text: "How do you want to pay?",
+      icon: "question",
+      showCancelButton: false, // Hide default cancel button
+      showConfirmButton: false, // Hide default confirm button
+      allowOutsideClick: false, // Prevent closing on outside click
+      showCloseButton: true, // Add top-right close button (X)
+      html: `
+        <button id="cashPaymentBtn" class="swal2-confirm swal2-styled">Cash</button>
+        <button id="onlinePaymentBtn" class="swal2-cancel swal2-styled">Online Payment</button>
+      `,
+
+      didOpen: () => {
+        let amount = selectedMonths.length * 500;
+        // Handle Cash Payment
+        document
+          .getElementById("cashPaymentBtn")
+          .addEventListener("click", () => {
+            Swal.close(); // Close the dialog
+            if (
+              confirm(
+                `You have to collect total amount of: ${amount}.00/- from students`
+              )
+            ) {
+              // AJAX for Cash Payment
+              $.ajax({
+                url: "php_files/old_students_fees.php",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                beforeSend: function () {
+                  $("#overlayer").show();
+                },
+                success: function (response) {
+                  $("#overlayer").hide();
+                  $(".modal_close").click();
+                  try {
+                    var result = JSON.parse(response);
+                    if (result.status === "error") {
+                      toastr.error(result.msg);
+                    } else {
+                      Swal.fire(
+                        "Payment Received Successful!",
+                        "Your payment was successful.",
+                        "success"
+                      );
+                      // .then(() => {
+                      //   location.reload(); // Refresh UI
+                      // });
+                    }
+                  } catch (e) {
+                    toastr.error("Unexpected response from server.");
+                    console.error("Parsing error:", e);
+                  }
+                },
+                error: function (xhr, status, error) {
+                  $("#overlayer").hide();
+                  toastr.error("Error: " + error);
+                },
+              });
+            }
+          });
+
+        // Handle Online Payment
+        document
+          .getElementById("onlinePaymentBtn")
+          .addEventListener("click", () => {
+            Swal.close(); // Close the dialog
+
+            let studentId = $("#student_id").val();
+            let year = $("#year_old").val();
+            let amount = selectedMonths.length * 500 * 100;
+
+            var options = {
+              key: "rzp_test_LzIrcpJhdUiUpR", // Replace with your Razorpay Key
+              amount: amount, // Amount in paisa (10000 = ₹100)
+              currency: "INR",
+              name: "BiCE Institute",
+              description: "Fee Payment",
+              image: "https://biceindia.in/assets/img/logo1.png",
+              handler: function (response) {
+                var paymentFormData = new FormData();
+                paymentFormData.append("student_id", studentId);
+                paymentFormData.append("year", year);
+                paymentFormData.append(
+                  "selected_months",
+                  selectedMonths.join(",")
+                );
+                paymentFormData.append(
+                  "payment_id",
+                  response.razorpay_payment_id
+                );
+                paymentFormData.append("payment_method", "online");
+
+                $.ajax({
+                  type: "POST",
+                  url: "php_files/old_monthly_payment_process.php",
+                  data: paymentFormData,
+                  contentType: false,
+                  processData: false,
+                  beforeSend: function () {
+                    $("#overlayer").show();
+                  },
+                  success: function (data) {
+                    $("#overlayer").hide();
+                    try {
+                      var result = JSON.parse(data);
+                      if (result.status == "error") {
+                        toastr.error(result.msg);
+                      } else {
+                        Swal.fire(
+                          "Payment Received Successful!",
+                          "Your payment was successful.",
+                          "success"
+                        ).then(() => {
+                          $("#StudentsFees").modal("hide");
+                        });
+                      }
+                    } catch (e) {
+                      toastr.error("Unexpected response from server.");
+                      console.error("Parsing error:", e);
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    $("#overlayer").hide();
+                    toastr.error("Payment processing failed.");
+                    console.error("AJAX Error:", error);
+                  },
+                });
+              },
+              theme: { color: "#3399cc" },
+            };
+
+            var rzp = new Razorpay(options);
+            rzp.open();
+          });
+      },
+    });
+  });
+
+  // ! when changeing year old
+  $(document).on("change", "#year_old", function (e) {
+    e.preventDefault();
+    let year = $("#year_old").val();
+    var id = $("#student_id").val();
+
+    if (!year || !id) {
+      alert("Student ID or Year is missing.");
+      return;
+    }
+
+    $.ajax({
+      url: "php_files/OldStudentsCollect.php",
+      type: "POST",
+      data: { id: id, year: year },
+      beforeSend: function () {
+        $("#overlayer").show();
+      },
+      success: function (data) {
+        $("#overlayer").hide();
+        $("#LoadCollectStudents").html(data);
+        $("#StudentsFees").modal("show");
+      },
+      error: function (xhr, status, error) {
+        $("#overlayer").hide();
+        console.error("AJAX Error:", status, error);
+        alert("Failed to fetch data. Check console for error.");
+      },
+    });
   });
 
   //! Fees Details

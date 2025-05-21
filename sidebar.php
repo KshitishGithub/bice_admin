@@ -94,16 +94,6 @@ if (!isset($_SESSION['admin_role'])) {
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="students_fees_report.php" class="nav-link <?php if (PAGE == "Students Fees Report") {
-                                                    echo 'active';
-                                                } ?>">
-                                <i class="bi bi-currency-rupee"></i>
-                                <p>Students Fess Reports</p>
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
                             <a href="old_students_fees.php" class="nav-link">
                                 <i class="bi bi-currency-rupee"></i>
                                 <p>Old Students Fess</p>
@@ -112,20 +102,41 @@ if (!isset($_SESSION['admin_role'])) {
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="old_due_list.php" class="nav-link">
+                            <a href="students_fees_report.php" class="nav-link <?php if (PAGE == "Students Fees Report") {
+                                                    echo 'active';
+                                                } ?>">
                                 <i class="bi bi-currency-rupee"></i>
-                                <p>Old Due Students</p>
+                                <p>New Students Fess Reports</p>
                             </a>
                         </li>
                     </ul>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="due_list.php" class="nav-link">
+                            <a href="old_students_fees_report.php" class="nav-link <?php if (PAGE == "Students Fees Report") {
+                                                    echo 'active';
+                                                } ?>">
                                 <i class="bi bi-currency-rupee"></i>
-                                <p>New Due Students</p>
+                                <p>Old Students Fess Reports</p>
                             </a>
                         </li>
                     </ul>
+                    
+                    <!--<ul class="nav nav-treeview">-->
+                    <!--    <li class="nav-item">-->
+                    <!--        <a href="old_due_list.php" class="nav-link">-->
+                    <!--            <i class="bi bi-currency-rupee"></i>-->
+                    <!--            <p>Old Due Students</p>-->
+                    <!--        </a>-->
+                    <!--    </li>-->
+                    <!--</ul>-->
+                    <!--<ul class="nav nav-treeview">-->
+                    <!--    <li class="nav-item">-->
+                    <!--        <a href="due_list.php" class="nav-link">-->
+                    <!--            <i class="bi bi-currency-rupee"></i>-->
+                    <!--            <p>New Due Students</p>-->
+                    <!--        </a>-->
+                    <!--    </li>-->
+                    <!--</ul>-->
                 </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link <?php if (PAGE == "All Students Details") {

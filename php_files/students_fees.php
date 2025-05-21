@@ -103,7 +103,9 @@ $totalAmount = $totalMonths * 500; // Calculate amount
 $monthsJson = json_encode($month); 
 
 // Current date
-$date = date('Y-m-d H:i:s');
+$date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+$date = $date->format('Y-m-d H:i:s');
+
 
 // Insert into the database
 $obj->insert('fees_collection', [

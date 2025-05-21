@@ -107,8 +107,8 @@ echo '</div>
         color: white;
     }
     .month.paid {
-        background-color: yellow;
-        color: black;
+        background-color: green;
+        color: white;
         cursor: not-allowed;
         pointer-events: not-allowed;
     }

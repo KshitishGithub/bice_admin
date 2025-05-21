@@ -35,7 +35,7 @@ include('sidebar.php');
                                             <label>Student Name:</label>
                                             <input type="text" class="form-control" name="name" id="name" placeholder="Enter Students Name">
                                         </div>
-                                        <div cla <div class="col-md-4 mt-2">
+                                        <div class="col-md-4 mt-2">
                                             <label>Fathers' Name:</label>
                                             <input type="text" class="form-control" name="father_name" id="father_name" placeholder="Fathers' name">
                                         </div>
@@ -48,9 +48,9 @@ include('sidebar.php');
                                             <input type="text" class="form-control" name="dob" id="dob" data-inputmask-alias="datetime" data-inputmask-inputformat="dd/mm/yyyy" data-mask>
                                         </div>
                                         <div class="col-md-4 mt-2">
-                                            <label>Gander:</label>
+                                            <label>Gender:</label>
                                             <select name="gander" class="form-control" id="gander">
-                                                <option selected disabled value="">--Select Gander--</option>
+                                                <option selected disabled value="">--Select Gender--</option>
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
                                                 <option value="Others">Others</option>

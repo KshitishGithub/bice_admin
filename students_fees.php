@@ -61,7 +61,7 @@ include('sidebar.php');
 <!-- student fees -->
 <div class="modal fade" id="StudentsFees" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <form id="Fees_Forms">
+        <form id="Old_Fees_Forms">
             <div class="modal-content">
                 <div id="LoadCollectStudents">
                     <!-- Load Content Here -->

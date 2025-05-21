@@ -6,6 +6,12 @@ $(function() {
     });
     $('#AddStudentsForm').validate({
         rules: {
+            stu_id: {
+                required: true
+            },
+            name: {
+                required: true
+            },
             first_name: {
                 required: true
             },
@@ -61,10 +67,12 @@ $(function() {
 
         },
         messages: {
+            stu_id: "Student ID is required.",
+            name: "Name is required.",
             first_name: "First name is required.",
             last_name: "Last name is required",
-            father_name: "Last name is required",
-            mother_name: "Last name is required",
+            father_name: "Father name is required",
+            mother_name: "Mother name is required",
             dob: "Date of birth is required",
             gander: "Gander is required",
             mobile: {

@@ -10,7 +10,7 @@ include('sidebar.php');
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12 d-flex justify-content-between">
-                    <h3>Students Fees Reports:</h3>
+                    <h3>Old Students Fees Reports:</h3>
                 </div>
                 <div class="col-md-12">
                     <div class="card mt-2">
@@ -38,9 +38,12 @@ include('sidebar.php');
                                         $obj = new Database();
 
                                         // Get all fees transactions for the selected year
-                                        $obj->rawsql("SELECT * FROM fees_collection ORDER BY id DESC");
+                                        $obj->rawsql("SELECT * FROM old_fees_collection ORDER BY id DESC");
 
                                         $fees_result = $obj->getResult();
+                                        // echo "<pre>";
+                                        // print_r($fees_result);
+                                        // die;
 
                                         // Get unique student IDs
                                         $studentIds = [];
@@ -48,7 +51,7 @@ include('sidebar.php');
                                             $studentIds[$entry['student_id']] = true;
                                         }
                                         $uniqueIds = array_keys($studentIds);
-
+                                        
                                         if (empty($uniqueIds)) {
                                             echo "<tr><td colspan='12'>No transactions found for the selected year.</td></tr>";
                                             exit;
@@ -57,22 +60,20 @@ include('sidebar.php');
                                         $idList = implode(',', array_map('intval', $uniqueIds));
 
                                         // Fetch student details
-                                        $objAdmission = new Admission();
-                                        $objAdmission->rawsql(
-                                            "SELECT 
-                                            r.fname, r.lname, r.father_name, f.s_id, p.batch, p.course, r.mobile, 
-                                            f.active_status, f.registration 
-                                        FROM fresh_students f 
-                                        INNER JOIN personal_details p ON f.s_id = p.s_id 
-                                        INNER JOIN registration r ON f.s_id = r.s_id 
-                                        WHERE f.active_status = 1 AND f.s_id IN ($idList)"
+                                        $obj->rawsql(
+                                            "SELECT * FROM old_students s LEFT JOIN batchs b ON s.batch = b.id WHERE s.status = 1 AND s.stu_sl IN ($idList)"
                                         );
-                                        $student_result = $objAdmission->getResult();
+                                        $student_result = $obj->getResult();
 
-                                        // Map student info by s_id
+                                        // echo "<pre>";
+                                        // print_r($student_result);
+                                        // echo "</pre>";
+                                        // die;
+
+                                        // Map student info by stu_sl (NOT s_id)
                                         $student_map = [];
                                         foreach ($student_result as $stu) {
-                                            $student_map[$stu['s_id']] = $stu;
+                                            $student_map[$stu['stu_sl']] = $stu;
                                         }
 
                                         // Show transaction rows
@@ -82,9 +83,9 @@ include('sidebar.php');
                                             if (!isset($student_map[$sid])) continue;
 
                                             $stu = $student_map[$sid];
-                                            $name = $stu['fname'] . ' ' . $stu['lname'];
-                                            $batch = $stu['batch'];
-                                            $registration = $stu['registration'];
+                                            $name = $stu['name'];
+                                            $batch = $stu['batchs'];
+                                            $registration = $stu['stu_sl'];
                                             $mobile = $stu['mobile'];
                                             $amount = $fee['amount'];
                                             $payment_type = $fee['payment_type'];
@@ -109,7 +110,7 @@ include('sidebar.php');
                                                     <td>$transaction_id</td>
                                                     <td>$created_at</td>
                                                     <td class='text-center'>
-                                                        <button type='button' data-stu_id='$sid' id='student_collect' class='btn btn-outline-secondary btn-sm'>
+                                                        <button type='button' data-stu_id='$sid' id='old_student_collect' class='btn btn-outline-secondary btn-sm'>
                                                             <i class='bi bi-eye mr-1'></i>Details
                                                         </button>
                                                     </td>
@@ -119,8 +120,6 @@ include('sidebar.php');
                                         ?>
                                     </tbody>
                                 </table>
-
-
                             </div>
                         </div>
                     </div>
