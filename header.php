@@ -112,7 +112,7 @@ if ($err) {
                         <?php
                         $result = json_decode($response, true);
                         $smsblz = ($result['wallet']);
-                        $totalsms = $smsblz * 5;
+                        $totalsms = $smsblz * 4;
                         echo 'SMS : <span class="badge bg-success" >' . $totalsms . '</span>';
                     }
                         ?>
